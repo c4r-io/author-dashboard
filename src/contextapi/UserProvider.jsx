@@ -13,7 +13,7 @@ export const UserContextProvider = ({ children }) => {
         };
       }
       case 'checkLogin': {
-        const authuser = sessionStorage.getItem('auth-user');
+        const authuser = localStorage.getItem('auth-user');
         if (authuser) {
           return {
             ...state,
@@ -24,7 +24,7 @@ export const UserContextProvider = ({ children }) => {
         }
       }
       case 'logout': {
-        sessionStorage.removeItem('auth-user');
+        localStorage.removeItem('auth-user');
         router.push('/login');
         return {
           ...state,

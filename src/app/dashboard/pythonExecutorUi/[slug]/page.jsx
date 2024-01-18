@@ -1,12 +1,12 @@
-"use client";
-import { api } from "@/utils/apibase";
-import { getToken } from "@/utils/token";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { useState, useEffect, useContext } from "react";
-import { UserContext } from "@/contextapi/UserProvider";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+'use client';
+import { api } from '@/utils/apibase';
+import { getToken } from '@/utils/token';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect, useContext } from 'react';
+import { UserContext } from '@/contextapi/UserProvider';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 const Page = ({ params }) => {
   const { userData, dispatchUserData } = useContext(UserContext);
   const router = useRouter();
@@ -16,12 +16,12 @@ const Page = ({ params }) => {
   const [headerContent, setHeaderContent] = useState(null);
   const [headerFooter, setHeaderFooter] = useState(null);
   const getPythonExecutorUi = async () => {
-    dispatchUserData({ type: "checkLogin" });
+    dispatchUserData({ type: 'checkLogin' });
     const config = {
-      method: "GET",
-      url: "api/pythonExecutorUi/" + params.slug,
+      method: 'GET',
+      url: 'api/pythonExecutorUi/' + params.slug,
       headers: {
-        Authorization: `Bearer ${getToken("token")}`,
+        Authorization: `Bearer ${getToken('token')}`,
       },
     };
     try {
@@ -29,17 +29,17 @@ const Page = ({ params }) => {
       setPythonExecutorUiResponse(response.data);
     } catch (error) {
       if (error?.response?.status == 401) {
-        toast.error(error.response.data.message + ". Login to try again.", {
-          position: "top-center",
+        toast.error(error.response.data.message + '. Login to try again.', {
+          position: 'top-center',
         });
-        router.push("/dashboard");
+        router.push('/dashboard');
         return;
       } else {
         toast.error(error.message, {
-          position: "top-center",
+          position: 'top-center',
         });
       }
-      router.push("/dashboard/pythonExecutorUi");
+      router.push('/dashboard/pythonExecutorUi');
       console.error(error);
     }
   };
@@ -49,7 +49,7 @@ const Page = ({ params }) => {
   useEffect(() => {
     setHeaderTitle(pythonExecutorUiResponse?.pythonExecutorUis?.headerTitle);
     setHeaderContent(
-      pythonExecutorUiResponse?.pythonExecutorUis?.headerContent
+      pythonExecutorUiResponse?.pythonExecutorUis?.headerContent,
     );
     setHeaderFooter(pythonExecutorUiResponse?.pythonExecutorUis?.headerFooter);
   }, [pythonExecutorUiResponse]);
@@ -57,7 +57,7 @@ const Page = ({ params }) => {
   // content type form data
   const updatePythonExecutorUi = async (e) => {
     e.preventDefault();
-    dispatchUserData({ type: "checkLogin" });
+    dispatchUserData({ type: 'checkLogin' });
     const data = {};
     if (
       headerTitle &&
@@ -80,39 +80,39 @@ const Page = ({ params }) => {
     }
     if (Object.keys(data).length <= 0) {
       toast.error(
-        "Empty Form Submission Not Allowed, Try after changing data.",
+        'Empty Form Submission Not Allowed, Try after changing data.',
         {
-          position: "top-center",
-        }
+          position: 'top-center',
+        },
       );
       return;
     }
     const config = {
-      method: "put",
-      url: "api/pythonExecutorUi/" + params.slug,
+      method: 'put',
+      url: 'api/pythonExecutorUi/' + params.slug,
       headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${getToken("token")}`,
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${getToken('token')}`,
       },
       // bodyObject
       data,
     };
     try {
       const response = await api.request(config);
-      router.push("/dashboard/pythonExecutorUi");
+      router.push('/dashboard/pythonExecutorUi');
       getPythonExecutorUi;
-      toast.success("Updated Successfully!", {
-        position: "top-center",
+      toast.success('Updated Successfully!', {
+        position: 'top-center',
       });
     } catch (error) {
       if (error?.response?.status == 401) {
-        toast.error(error.response.data.message + ". Login to try again.", {
-          position: "top-center",
+        toast.error(error.response.data.message + '. Login to try again.', {
+          position: 'top-center',
         });
         // router.push('/');
       } else {
         toast.error(error.message, {
-          position: "top-center",
+          position: 'top-center',
         });
       }
       console.error(error);
@@ -126,7 +126,7 @@ const Page = ({ params }) => {
             htmlFor="headerTitle"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            {" "}
+            {' '}
             Header title
           </label>
           <input
@@ -145,7 +145,7 @@ const Page = ({ params }) => {
             htmlFor="headerContent"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            {" "}
+            {' '}
             Header content
           </label>
           <textarea
@@ -164,7 +164,7 @@ const Page = ({ params }) => {
             htmlFor="headerFooter"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            {" "}
+            {' '}
             Header footer
           </label>
           <input
@@ -191,13 +191,13 @@ const Page = ({ params }) => {
 };
 export default Page;
 const StringArrayInput = ({ defaultValues, onUpdate, label }) => {
-  const [newString, setNewString] = useState("");
+  const [newString, setNewString] = useState('');
   const [stringList, setStringsList] = useState(defaultValues);
   const addNewString = (e) => {
     const cAns = [...stringList, newString.toString()];
     setStringsList(cAns);
     onUpdate(cAns);
-    setNewString("");
+    setNewString('');
   };
   const removeOneString = (index) => {
     const incAns = JSON.parse(JSON.stringify(stringList));
@@ -215,7 +215,7 @@ const StringArrayInput = ({ defaultValues, onUpdate, label }) => {
           htmlFor="add_new_incorrect_answer"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >
-          {" "}
+          {' '}
           {label}
         </label>
         <input

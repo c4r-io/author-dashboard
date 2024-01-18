@@ -33,7 +33,7 @@ const Page = ({ params }) => {
     }
     const config = {
       method: 'post',
-      url: '/api/login',
+      url: 'api/login',
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -42,7 +42,7 @@ const Page = ({ params }) => {
     };
     try {
       const response = await api.request(config);
-      sessionStorage.setItem('auth-user', JSON.stringify(response.data));
+      localStorage.setItem('auth-user', JSON.stringify(response.data));
       setToken('token', response.data.token);
       dispatchUserData({
         type: 'login',
@@ -96,7 +96,7 @@ const Page = ({ params }) => {
     }
     const config = {
       method: 'post',
-      url: '/api/register',
+      url: 'api/register',
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -105,7 +105,7 @@ const Page = ({ params }) => {
     };
     try {
       const response = await api.request(config);
-      sessionStorage.setItem('auth-user', JSON.stringify(response.data));
+      localStorage.setItem('auth-user', JSON.stringify(response.data));
       setToken('token', response.data.token);
       dispatchUserData({
         type: 'login',

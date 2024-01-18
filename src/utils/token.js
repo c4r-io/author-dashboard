@@ -1,14 +1,14 @@
 export const setToken = function (key, value) {
-  sessionStorage.setItem(`${key}`, value);
+  localStorage.setItem(`${key}`, value);
 };
 export const getToken = function (key) {
-  const token = sessionStorage.getItem(key);
+  const token = localStorage.getItem(key);
   if (token) {
     return token;
   }
 };
 export const removeToken = function (key) {
-  sessionStorage.removeItem(key);
+  localStorage.removeItem(key);
 };
 const token = {
   setToken,

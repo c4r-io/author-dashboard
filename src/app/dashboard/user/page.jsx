@@ -29,7 +29,7 @@ const Page = () => {
     dispatchUserData({ type: 'checkLogin' });
     const config = {
       method: 'GET',
-      url: '/api/user',
+      url: 'api/user',
       headers: {
         Authorization: `Bearer ${getToken('token')}`,
       },
@@ -63,7 +63,7 @@ const Page = () => {
     dispatchUserData({ type: 'checkLogin' });
     const config = {
       method: 'post',
-      url: '/api/user',
+      url: 'api/user',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${getToken('token')}`,
@@ -102,7 +102,7 @@ const Page = () => {
     dispatchUserData({ type: 'checkLogin' });
     const config = {
       method: 'delete',
-      url: '/api/user/' + deleteId,
+      url: 'api/user/' + deleteId,
       headers: {
         Authorization: `Bearer ${getToken('token')}`,
       },
@@ -139,7 +139,7 @@ const Page = () => {
   return (
     <div className="container mx-auto py-4 px-4 md:px-0">
       <div>
-        {/* <div className="w-full flex justify-end pb-3">
+        <div className="w-full flex justify-end pb-3">
           <button
             type="button"
             className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white  bg-gradient-to-r from-green-700 to-green-600 hover:bg-gradient-to-bl rounded-lg focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
@@ -165,7 +165,7 @@ const Page = () => {
             )}
             {createLoading ? 'Creating...' : 'New User'}
           </button>
-        </div> */}
+        </div>
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-300 dark:bg-gray-900 dark:text-gray-400">
