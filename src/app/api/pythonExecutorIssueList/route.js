@@ -34,9 +34,6 @@ export async function GET(req, res) {
 // @route POST api/pythonExecutorIssueLists
 // @acess Privet
 export async function POST(req) {
-  if (!(await protect(req))) {
-    return Response.json({ mesg: 'Not authorized' });
-  }
   const body = await req.formData();
   connectMongoDB();
   const pythonExecutorIssueData = {}
