@@ -1,0 +1,48 @@
+import connectMongoDB from '@/config/connectMongoDB.js';
+import User from '@/models/userModel.js';
+import { admin, protect } from '@/middleware/authMiddleware';
+// @desc Get all users
+// @route GET api/users
+// @acess Privet
+export async function GET(req, res) {
+  const keywords = {};
+  // in case if the query is not js object
+  // if (
+  //   !(await protect(req))
+  // ) {
+  //   return Response.json({ mesg: "Not authorized" })
+  // }
+  connectMongoDB();
+  const pageSize = Number(req.nextUrl.searchParams.get('pageSize')) || 30;
+  const page = Number(req.nextUrl.searchParams.get('pageNumber')) || 1;
+  const count = await User.countDocuments({ ...keywords });
+  const apiFunction = User.find({ ...keywords })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    .sort({ createdAt: -1 });
+  let selectedString = '';
+  if (req.nextUrl.searchParams.get('select')) {
+    selectedString += ' ' + req.nextUrl.searchParams.get('select');
+  }
+  apiFunction.select(selectedString);
+  apiFunction.select('-password');
+  const users = await apiFunction.exec();
+  return Response.json({ users, page, pages: Math.ceil(count / pageSize) });
+}
+// @desc Post user
+// @route POST api/users
+// @acess Privet
+export async function POST(req) {
+  if (!(await protect(req))) {
+    return Response.json({ mesg: 'Not authorized' });
+  }
+  const body = await req.json();
+  connectMongoDB();
+  const createduser = await User.create({
+    userName: body.userName,
+    email: body.email,
+    password: body.password,
+    permission: 'self',
+  });
+  return Response.json({ ...createduser._doc, password: null });
+}
