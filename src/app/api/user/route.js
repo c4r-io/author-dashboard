@@ -1,6 +1,7 @@
 import connectMongoDB from '@/config/connectMongoDB.js';
 import User from '@/models/userModel.js';
 import { admin, protect } from '@/middleware/authMiddleware';
+import filehandler from '@/lib/filehandler';
 // @desc Get all users
 // @route GET api/users
 // @acess Privet
@@ -32,17 +33,24 @@ export async function GET(req, res) {
 // @desc Post user
 // @route POST api/users
 // @acess Privet
-export async function POST(req) {
-  if (!(await protect(req))) {
-    return Response.json({ mesg: 'Not authorized' });
-  }
-  const body = await req.json();
+export async function POST(req, context) {
   connectMongoDB();
-  const createduser = await User.create({
-    userName: body.userName,
-    email: body.email,
-    password: body.password,
-    permission: 'self',
-  });
-  return Response.json({ ...createduser._doc, password: null });
+  const user = {};
+  // start if
+  if (user) {
+    // convert to js object
+    const body = await req.formData();
+    if (body.get('userName')) {
+      user['userName'] = body.get('userName');
+    }
+    if (body.get('email')) {
+      user['email'] = body.get('email');
+    }
+    if (body.get('password')) {
+      user['password'] = body.get('password');
+    }
+    const createdUser = await User.create({ ...user });
+    return Response.json({ ...createdUser._doc, password: null });
+    // end if
+  }
 }

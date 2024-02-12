@@ -34,23 +34,36 @@ export async function GET(req, res) {
 // @desc Post pythonExecutorIssueList
 // @route POST api/pythonExecutorIssueLists
 // @acess Privet
-export async function POST(req) {
-  const body = await req.formData();
+export async function POST(req, context) {
   connectMongoDB();
-  const pythonExecutorIssueData = {}
-  if (body.get('description')) {
-    pythonExecutorIssueData["description"] = body.get('description');
+  const pythonExecutorIssueList = {};
+  // start if
+  if (pythonExecutorIssueList) {
+    // convert to js object
+    const body = await req.formData();
+    if (body.get('description')) {
+      pythonExecutorIssueList['description'] = body.get('description');
+    }
+    if (
+      body.get('attachment') &&
+      pythonExecutorIssueList.attachment !== body.get('attachment')
+    ) {
+      const filename = await filehandler.saveFileAsBinary(
+        body.get('attachment'),
+      );
+      // const filename = await filehandler.saveFile(body.get("attachment"))
+      // filehandler.deleteFile(pythonExecutorIssueList.attachment)
+      pythonExecutorIssueList['attachment'] = filename;
+    }
+    const createdPythonExecutorIssueList = await PythonExecutorIssueList.create(
+      { ...pythonExecutorIssueList },
+    );
+    return Response.json({ ...createdPythonExecutorIssueList._doc });
+    // end if
+  } else {
+    return Response.json(
+      { message: 'PythonExecutorIssueList not found' },
+      { status: 404 },
+    );
   }
-  if (
-    body.get('attachment') &&
-    pythonExecutorIssueData["attachment"] !== body.get('attachment')
-  ) {
-    const filename = await filehandler.saveFileAsBinary(body.get('attachment'));
-    // filehandler.deleteFile(pythonExecutorIssueList.attachment);
-    pythonExecutorIssueData["attachment"] = filename;
-  }
-  const createdpythonExecutorIssueList = await PythonExecutorIssueList.create({
-    ...pythonExecutorIssueData
-  });
-  return Response.json({ ...createdpythonExecutorIssueList._doc });
 }

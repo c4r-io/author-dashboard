@@ -30,12 +30,11 @@ const Page = () => {
   }
   const { userData, dispatchUserData } = useContext(UserContext);
   const router = useRouter();
-  const [pythonExecutorIssueListList, setPythonExecutorIssueListList] =
-    useState({
-      page: 1,
-      pages: 1,
-      pythonExecutorIssueLists: null,
-    });
+  const [studentsAnswerList, setStudentsAnswerList] = useState({
+    page: 1,
+    pages: 1,
+    studentsAnswers: null,
+  });
   const [page, setPage] = useState(1);
   const [deletePopup, setDeletePopup] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -46,23 +45,23 @@ const Page = () => {
   if (pageNumber) {
     setPage(pageNumber);
   }
-  const getpythonExecutorIssueListsList = async (page) => {
+  const getstudentsAnswersList = async (page) => {
     dispatchUserData({ type: 'checkLogin' });
     const config = {
       method: 'GET',
-      url: 'api/pythonExecutorIssueList',
+      url: 'api/studentsAnswer',
       headers: {
         Authorization: `Bearer ${getToken('token')}`,
       },
       params: {
         pageNumber: page,
-        select: ' description',
+        select: ' question1Answer question2Answer',
       },
     };
     setListLoading(true);
     try {
       const response = await api.request(config);
-      setPythonExecutorIssueListList(response.data);
+      setStudentsAnswerList(response.data);
       console.log(response.data);
       setListLoading(false);
     } catch (error) {
@@ -80,18 +79,19 @@ const Page = () => {
       }
     }
   };
-  const createSamplePythonExecutorIssueList = async () => {
+  const createSampleStudentsAnswer = async () => {
     dispatchUserData({ type: 'checkLogin' });
     const config = {
       method: 'post',
-      url: 'api/pythonExecutorIssueList',
+      url: 'api/studentsAnswer',
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${getToken('token')}`,
       },
       data: {
-        description: 'Sample Description',
-        attachment: 'uploads/placeholder-image.jpg',
+        researchQuestion: 'Sample Research question',
+        question1Answer: 'Sample Question1 answer',
+        question2Answer: 'Sample Question2 answer',
       },
     };
     setCreateLoading(true);
@@ -99,8 +99,8 @@ const Page = () => {
       const response = await api.request(config);
       console.log(response.data);
       setCreateLoading(false);
-      router.push('/dashboard/pythonExecutorIssueList/' + response.data._id);
-      toast.success('Sample Python executor issue list Created Successfully!', {
+      router.push('/dashboard/studentsAnswer/' + response.data._id);
+      toast.success('Sample Students answer Created Successfully!', {
         position: 'top-center',
       });
     } catch (error) {
@@ -122,18 +122,18 @@ const Page = () => {
     setDeleteId(id);
     setDeletePopup(true);
   };
-  const deletePythonExecutorIssueList = async () => {
+  const deleteStudentsAnswer = async () => {
     dispatchUserData({ type: 'checkLogin' });
     const config = {
       method: 'delete',
-      url: 'api/pythonExecutorIssueList/' + deleteId,
+      url: 'api/studentsAnswer/' + deleteId,
       headers: {
         Authorization: `Bearer ${getToken('token')}`,
       },
     };
     try {
       await api.request(config);
-      getpythonExecutorIssueListsList();
+      getstudentsAnswersList();
       setDeletePopup(false);
       toast.success('Deleted successfully!', {
         position: 'top-center',
@@ -158,7 +158,7 @@ const Page = () => {
     // router.push({ query: { page: e } });
   };
   useEffect(() => {
-    getpythonExecutorIssueListsList(page);
+    getstudentsAnswersList(page);
   }, [page]);
   return (
     <div className="container mx-auto py-4 px-4 md:px-0">
@@ -167,7 +167,7 @@ const Page = () => {
           <button
             type="button"
             className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white  bg-gradient-to-r from-green-700 to-green-600 hover:bg-gradient-to-bl rounded-lg focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-            onClick={() => createSamplePythonExecutorIssueList()}
+            onClick={() => createSampleStudentsAnswer()}
             disabled={createLoading}
           >
             {!createLoading && (
@@ -187,7 +187,7 @@ const Page = () => {
                 />
               </svg>
             )}
-            {createLoading ? 'Creating...' : 'New Python executor issue list'}
+            {createLoading ? 'Creating...' : 'New Students answer'}
           </button>
         </div>
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -195,7 +195,10 @@ const Page = () => {
             <thead className="text-xs text-gray-700 uppercase bg-gray-300 dark:bg-gray-900 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
-                  Description
+                  Question1 answer
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Question2 answer
                 </th>
                 <th scope="col" className="px-6 py-3 text-right">
                   Actions
@@ -204,77 +207,75 @@ const Page = () => {
             </thead>
             {!listLoading && (
               <tbody>
-                {pythonExecutorIssueListList?.pythonExecutorIssueLists?.map(
-                  (item, index) => (
-                    <tr
-                      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                      key={index}
-                    >
-                      <td className="px-6 py-4">
-                        {getTrimedString(item.description)?.content}
-                        {getTrimedString(item.description)?.isTrimed && '...'}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="inline-flex space-x-1 items-center text-base font-semibold text-gray-900 dark:text-white">
-                          <button
-                            type="button"
-                            className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-yellow-700 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800"
-                            onClick={() =>
-                              router.push(
-                                '/dashboard/pythonExecutorIssueList/' +
-                                  item._id,
-                              )
-                            }
+                {studentsAnswerList?.studentsAnswers?.map((item, index) => (
+                  <tr
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    key={index}
+                  >
+                    <td className="px-6 py-4">
+                      {getTrimedString(item.question1Answer)?.content}
+                      {getTrimedString(item.question1Answer)?.isTrimed && '...'}
+                    </td>
+                    <td className="px-6 py-4">
+                      {getTrimedString(item.question2Answer)?.content}
+                      {getTrimedString(item.question2Answer)?.isTrimed && '...'}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="inline-flex space-x-1 items-center text-base font-semibold text-gray-900 dark:text-white">
+                        <button
+                          type="button"
+                          className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-yellow-700 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800"
+                          onClick={() =>
+                            router.push('/dashboard/studentsAnswer/' + item._id)
+                          }
+                        >
+                          <svg
+                            className="w-3 h-3 mr-1 text-white"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 21 21"
                           >
-                            <svg
-                              className="w-3 h-3 mr-1 text-white"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 21 21"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M7.418 17.861 1 20l2.139-6.418m4.279 4.279 10.7-10.7a3.027 3.027 0 0 0-2.14-5.165c-.802 0-1.571.319-2.139.886l-10.7 10.7m4.279 4.279-4.279-4.279m2.139 2.14 7.844-7.844m-1.426-2.853 4.279 4.279"
-                              />
-                            </svg>
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-                            onClick={() => deleteConfirmDialog(item._id)}
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M7.418 17.861 1 20l2.139-6.418m4.279 4.279 10.7-10.7a3.027 3.027 0 0 0-2.14-5.165c-.802 0-1.571.319-2.139.886l-10.7 10.7m4.279 4.279-4.279-4.279m2.139 2.14 7.844-7.844m-1.426-2.853 4.279 4.279"
+                            />
+                          </svg>
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                          onClick={() => deleteConfirmDialog(item._id)}
+                        >
+                          <svg
+                            className="w-3 h-3 mr-1 text-white"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 18 20"
                           >
-                            <svg
-                              className="w-3 h-3 mr-1 text-white"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 18 20"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M1 5h16M7 8v8m4-8v8M7 1h4a1 1 0 0 1 1 1v3H6V2a1 1 0 0 1 1-1ZM3 5h12v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5Z"
-                              />
-                            </svg>
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ),
-                )}
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M1 5h16M7 8v8m4-8v8M7 1h4a1 1 0 0 1 1 1v3H6V2a1 1 0 0 1 1-1ZM3 5h12v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5Z"
+                            />
+                          </svg>
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             )}
           </table>
-          {pythonExecutorIssueListList?.pythonExecutorIssueLists?.length ==
-          0 ? (
+          {studentsAnswerList?.studentsAnswers?.length == 0 ? (
             <div className="text-black dark:text-white text-center">
               No data to show
             </div>
@@ -310,10 +311,10 @@ const Page = () => {
             </div>
           )}
         </div>
-        {pythonExecutorIssueListList.pages > 0 && (
+        {studentsAnswerList.pages > 0 && (
           <Pagination
             activePage={page}
-            pageLength={pythonExecutorIssueListList?.pages}
+            pageLength={studentsAnswerList?.pages}
             onpageChange={onpageChange}
           />
         )}
@@ -362,13 +363,13 @@ const Page = () => {
                   />
                 </svg>
                 <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                  Are you sure you want to delete this pythonExecutorIssueList?
+                  Are you sure you want to delete this studentsAnswer?
                 </h3>
                 <button
                   data-modal-hide="popup-modal"
                   type="button"
                   className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-                  onClick={() => deletePythonExecutorIssueList()}
+                  onClick={() => deleteStudentsAnswer()}
                 >
                   Yes, I&apos;m sure
                 </button>

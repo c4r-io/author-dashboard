@@ -10,22 +10,23 @@ import 'react-quill/dist/quill.snow.css';
 const Page = ({ params }) => {
   const { userData, dispatchUserData } = useContext(UserContext);
   const router = useRouter();
-  const [pythonExecutorIssueListResponse, setPythonExecutorIssueListResponse] =
-    useState(null);
-  const [description, setDescription] = useState(null);
-  const [attachment, setAttachment] = useState(null);
-  const getPythonExecutorIssueList = async () => {
+  const [
+    studentSubmittedQuestionResponse,
+    setStudentSubmittedQuestionResponse,
+  ] = useState(null);
+  const [content, setContent] = useState(null);
+  const getStudentSubmittedQuestion = async () => {
     dispatchUserData({ type: 'checkLogin' });
     const config = {
       method: 'GET',
-      url: 'api/pythonExecutorIssueList/' + params.slug,
+      url: 'api/studentSubmittedQuestion/' + params.slug,
       headers: {
         Authorization: `Bearer ${getToken('token')}`,
       },
     };
     try {
       const response = await api.request(config);
-      setPythonExecutorIssueListResponse(response.data);
+      setStudentSubmittedQuestionResponse(response.data);
     } catch (error) {
       if (error?.response?.status == 401) {
         toast.error(error.response.data.message + '. Login to try again.', {
@@ -38,42 +39,30 @@ const Page = ({ params }) => {
           position: 'top-center',
         });
       }
-      router.push('/dashboard/pythonExecutorIssueList');
+      router.push('/dashboard/studentSubmittedQuestion');
       console.error(error);
     }
   };
   useEffect(() => {
-    getPythonExecutorIssueList();
+    getStudentSubmittedQuestion();
   }, [params.slug]);
   useEffect(() => {
-    setDescription(
-      pythonExecutorIssueListResponse?.pythonExecutorIssueLists?.description,
+    setContent(
+      studentSubmittedQuestionResponse?.studentSubmittedQuestions?.content,
     );
-    setAttachment(
-      pythonExecutorIssueListResponse?.pythonExecutorIssueLists?.attachment,
-    );
-  }, [pythonExecutorIssueListResponse]);
+  }, [studentSubmittedQuestionResponse]);
   // update user data
   // content type form data
-  const updatePythonExecutorIssueList = async (e) => {
+  const updateStudentSubmittedQuestion = async (e) => {
     e.preventDefault();
     dispatchUserData({ type: 'checkLogin' });
     const data = {};
     if (
-      description &&
-      pythonExecutorIssueListResponse?.pythonExecutorIssueLists?.description !==
-        description
+      content &&
+      studentSubmittedQuestionResponse?.studentSubmittedQuestions?.content !==
+        content
     ) {
-      data.description = description;
-    }
-    if (
-      attachment &&
-      attachment.name &&
-      attachment.lastModified &&
-      pythonExecutorIssueListResponse?.pythonExecutorIssueLists?.attachment !==
-        attachment
-    ) {
-      data.attachment = attachment;
+      data.content = content;
     }
     if (Object.keys(data).length <= 0) {
       toast.error(
@@ -86,7 +75,7 @@ const Page = ({ params }) => {
     }
     const config = {
       method: 'put',
-      url: 'api/pythonExecutorIssueList/' + params.slug,
+      url: 'api/studentSubmittedQuestion/' + params.slug,
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${getToken('token')}`,
@@ -96,8 +85,8 @@ const Page = ({ params }) => {
     };
     try {
       const response = await api.request(config);
-      router.push('/dashboard/pythonExecutorIssueList');
-      getPythonExecutorIssueList;
+      router.push('/dashboard/studentSubmittedQuestion');
+      getStudentSubmittedQuestion;
       toast.success('Updated Successfully!', {
         position: 'top-center',
       });
@@ -120,57 +109,30 @@ const Page = ({ params }) => {
       <div>
         <div className="mb-6">
           <label
-            htmlFor="description"
+            htmlFor="content"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             {' '}
-            Description
+            Content
           </label>
-          <input
-            type="text"
-            id="description"
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-            placeholder="Description"
+          <textarea
+            type="textarea"
+            id="content"
+            className="h-64 shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
+            placeholder="Content"
             defaultValue={
-              pythonExecutorIssueListResponse?.pythonExecutorIssueLists
-                ?.description
+              studentSubmittedQuestionResponse?.studentSubmittedQuestions
+                ?.content
             }
-            onInput={(e) => setDescription(e.target.value)}
+            onInput={(e) => setContent(e.target.value)}
           />
-        </div>
-        <div className="mb-6">
-          <div>Previous file</div>
-          <img
-            className="w-64"
-            src={
-              pythonExecutorIssueListResponse?.pythonExecutorIssueLists
-                ?.attachment?.data
-            }
-          ></img>
-        </div>
-        <div className="mb-6">
-          <div>
-            <label
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              htmlFor="attachment"
-            >
-              Upload Attachment file
-            </label>
-            <input
-              className="block w-full p-2.5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-              aria-describedby="attachment_help"
-              id="attachment"
-              type="file"
-              onChange={(e) => setAttachment(e.target.files[0])}
-            />
-          </div>
         </div>
         <button
           type="submit"
           className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-          onClick={updatePythonExecutorIssueList}
+          onClick={updateStudentSubmittedQuestion}
         >
-          Update Python executor issue list
+          Update Student submitted question
         </button>
       </div>
     </div>

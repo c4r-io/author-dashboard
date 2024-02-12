@@ -8,6 +8,26 @@ import { useContext, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { UserContext } from '@/contextapi/UserProvider';
 const Page = () => {
+  function getTrimedString(str, len = 50) {
+    const arStr = str?.split(' ');
+    let opStr = '';
+    if (arStr.length < 5) {
+      return { content: `${str?.slice(0, len)} `, isTrimed: str.length > len };
+    }
+    if (arStr) {
+      for (const iterator of arStr) {
+        const testOpStr = opStr + ' ' + iterator;
+        if (testOpStr.length < len) {
+          opStr = testOpStr;
+        } else {
+          break;
+        }
+      }
+      return { content: `${opStr} `, isTrimed: str.length > len };
+    } else {
+      return { content: ` `, isTrimed: false };
+    }
+  }
   const { userData, dispatchUserData } = useContext(UserContext);
   const router = useRouter();
   const [pythonExecutorUiList, setPythonExecutorUiList] = useState({
@@ -65,7 +85,7 @@ const Page = () => {
       method: 'post',
       url: 'api/pythonExecutorUi',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${getToken('token')}`,
       },
       data: {
@@ -193,7 +213,10 @@ const Page = () => {
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                     key={index}
                   >
-                    <td className="px-6 py-4">{item.headerTitle}</td>
+                    <td className="px-6 py-4">
+                      {getTrimedString(item.headerTitle)?.content}
+                      {getTrimedString(item.headerTitle)?.isTrimed && '...'}
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex space-x-1 items-center text-base font-semibold text-gray-900 dark:text-white">
                         <button

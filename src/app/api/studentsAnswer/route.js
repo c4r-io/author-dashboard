@@ -1,9 +1,9 @@
 import connectMongoDB from '@/config/connectMongoDB.js';
-import PythonExecutorUi from '@/models/pythonExecutorUiModel.js';
+import StudentsAnswer from '@/models/studentsAnswerModel.js';
 import { admin, protect } from '@/middleware/authMiddleware';
 import filehandler from '@/lib/filehandler';
-// @desc Get all pythonExecutorUis
-// @route GET api/pythonExecutorUis
+// @desc Get all studentsAnswers
+// @route GET api/studentsAnswers
 // @acess Privet
 export async function GET(req, res) {
   const keywords = {};
@@ -16,48 +16,48 @@ export async function GET(req, res) {
   connectMongoDB();
   const pageSize = Number(req.nextUrl.searchParams.get('pageSize')) || 30;
   const page = Number(req.nextUrl.searchParams.get('pageNumber')) || 1;
-  const count = await PythonExecutorUi.countDocuments({ ...keywords });
-  const apiFunction = PythonExecutorUi.find({ ...keywords })
+  const count = await StudentsAnswer.countDocuments({ ...keywords });
+  const apiFunction = StudentsAnswer.find({ ...keywords })
     .limit(pageSize)
     .skip(pageSize * (page - 1))
     .sort({ createdAt: -1 });
   if (req.nextUrl.searchParams.get('select')) {
     apiFunction.select(req.nextUrl.searchParams.get('select'));
   }
-  const pythonExecutorUis = await apiFunction.exec();
+  const studentsAnswers = await apiFunction.exec();
   return Response.json({
-    pythonExecutorUis,
+    studentsAnswers,
     page,
     pages: Math.ceil(count / pageSize),
   });
 }
-// @desc Post pythonExecutorUi
-// @route POST api/pythonExecutorUis
+// @desc Post studentsAnswer
+// @route POST api/studentsAnswers
 // @acess Privet
 export async function POST(req, context) {
   connectMongoDB();
-  const pythonExecutorUi = {};
+  const studentsAnswer = {};
   // start if
-  if (pythonExecutorUi) {
+  if (studentsAnswer) {
     // convert to js object
     const body = await req.formData();
-    if (body.get('headerTitle')) {
-      pythonExecutorUi['headerTitle'] = body.get('headerTitle');
+    if (body.get('researchQuestion')) {
+      studentsAnswer['researchQuestion'] = body.get('researchQuestion');
     }
-    if (body.get('headerContent')) {
-      pythonExecutorUi['headerContent'] = body.get('headerContent');
+    if (body.get('question1Answer')) {
+      studentsAnswer['question1Answer'] = body.get('question1Answer');
     }
-    if (body.get('headerFooter')) {
-      pythonExecutorUi['headerFooter'] = body.get('headerFooter');
+    if (body.get('question2Answer')) {
+      studentsAnswer['question2Answer'] = body.get('question2Answer');
     }
-    const createdPythonExecutorUi = await PythonExecutorUi.create({
-      ...pythonExecutorUi,
+    const createdStudentsAnswer = await StudentsAnswer.create({
+      ...studentsAnswer,
     });
-    return Response.json({ ...createdPythonExecutorUi._doc });
+    return Response.json({ ...createdStudentsAnswer._doc });
     // end if
   } else {
     return Response.json(
-      { message: 'PythonExecutorUi not found' },
+      { message: 'StudentsAnswer not found' },
       { status: 404 },
     );
   }

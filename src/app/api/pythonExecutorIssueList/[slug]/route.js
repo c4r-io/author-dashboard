@@ -43,8 +43,11 @@ export async function PUT(req, context) {
       body.get('attachment') &&
       pythonExecutorIssueList.attachment !== body.get('attachment')
     ) {
-      const filename = await filehandler.saveFileAsBinary(body.get('attachment'));
-      // filehandler.deleteFile(pythonExecutorIssueList.attachment);
+      const filename = await filehandler.saveFileAsBinary(
+        body.get('attachment'),
+      );
+      // const filename = await filehandler.saveFile(body.get("attachment"))
+      // filehandler.deleteFile(pythonExecutorIssueList.attachment)
       pythonExecutorIssueList.attachment = filename;
     }
     const updatedPythonExecutorIssueList = await pythonExecutorIssueList.save();
@@ -67,7 +70,7 @@ export async function DELETE(req, context) {
     params.slug,
   );
   if (pythonExecutorIssueLists) {
-    // filehandler.deleteFile(pythonExecutorIssueLists.attachment);
+    //filehandler.deleteFile(pythonExecutorIssueLists.attachment)
     await pythonExecutorIssueLists.deleteOne();
     return Response.json({ message: 'PythonExecutorIssueList removed' });
   } else {

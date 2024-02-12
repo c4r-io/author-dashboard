@@ -1,9 +1,9 @@
 import connectMongoDB from '@/config/connectMongoDB.js';
-import PythonExecutorUi from '@/models/pythonExecutorUiModel.js';
+import ResearchQuestion from '@/models/researchQuestionModel.js';
 import { admin, protect } from '@/middleware/authMiddleware';
 import filehandler from '@/lib/filehandler';
-// @desc Get all pythonExecutorUis
-// @route GET api/pythonExecutorUis
+// @desc Get all researchQuestions
+// @route GET api/researchQuestions
 // @acess Privet
 export async function GET(req, res) {
   const keywords = {};
@@ -16,48 +16,51 @@ export async function GET(req, res) {
   connectMongoDB();
   const pageSize = Number(req.nextUrl.searchParams.get('pageSize')) || 30;
   const page = Number(req.nextUrl.searchParams.get('pageNumber')) || 1;
-  const count = await PythonExecutorUi.countDocuments({ ...keywords });
-  const apiFunction = PythonExecutorUi.find({ ...keywords })
+  const count = await ResearchQuestion.countDocuments({ ...keywords });
+  const apiFunction = ResearchQuestion.find({ ...keywords })
     .limit(pageSize)
     .skip(pageSize * (page - 1))
     .sort({ createdAt: -1 });
   if (req.nextUrl.searchParams.get('select')) {
     apiFunction.select(req.nextUrl.searchParams.get('select'));
   }
-  const pythonExecutorUis = await apiFunction.exec();
+  const researchQuestions = await apiFunction.exec();
   return Response.json({
-    pythonExecutorUis,
+    researchQuestions,
     page,
     pages: Math.ceil(count / pageSize),
   });
 }
-// @desc Post pythonExecutorUi
-// @route POST api/pythonExecutorUis
+// @desc Post researchQuestion
+// @route POST api/researchQuestions
 // @acess Privet
 export async function POST(req, context) {
   connectMongoDB();
-  const pythonExecutorUi = {};
+  const researchQuestion = {};
   // start if
-  if (pythonExecutorUi) {
+  if (researchQuestion) {
     // convert to js object
     const body = await req.formData();
-    if (body.get('headerTitle')) {
-      pythonExecutorUi['headerTitle'] = body.get('headerTitle');
+    if (body.get('questionType')) {
+      researchQuestion['questionType'] = body.get('questionType');
     }
-    if (body.get('headerContent')) {
-      pythonExecutorUi['headerContent'] = body.get('headerContent');
+    if (body.get('question1')) {
+      researchQuestion['question1'] = body.get('question1');
     }
-    if (body.get('headerFooter')) {
-      pythonExecutorUi['headerFooter'] = body.get('headerFooter');
+    if (body.get('description1')) {
+      researchQuestion['description1'] = body.get('description1');
     }
-    const createdPythonExecutorUi = await PythonExecutorUi.create({
-      ...pythonExecutorUi,
+    if (body.get('question2')) {
+      researchQuestion['question2'] = body.get('question2');
+    }
+    const createdResearchQuestion = await ResearchQuestion.create({
+      ...researchQuestion,
     });
-    return Response.json({ ...createdPythonExecutorUi._doc });
+    return Response.json({ ...createdResearchQuestion._doc });
     // end if
   } else {
     return Response.json(
-      { message: 'PythonExecutorUi not found' },
+      { message: 'ResearchQuestion not found' },
       { status: 404 },
     );
   }
