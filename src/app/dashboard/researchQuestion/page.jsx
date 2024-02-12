@@ -11,7 +11,7 @@ const Page = () => {
   function getTrimedString(str, len = 50) {
     const arStr = str?.split(' ');
     let opStr = '';
-    if (arStr.length < 5) {
+    if (arStr?.length < 5) {
       return { content: `${str?.slice(0, len)} `, isTrimed: str.length > len };
     }
     if (arStr) {
@@ -93,6 +93,7 @@ const Page = () => {
         question1: 'Sample Question1',
         description1: 'Sample Description1',
         question2: 'Sample Question2',
+        question2Placeholder: 'Sample Question2 Placeholder',
       },
     };
     setCreateLoading(true);

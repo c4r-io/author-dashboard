@@ -11,7 +11,7 @@ const Page = () => {
   function getTrimedString(str, len = 50) {
     const arStr = str?.split(' ');
     let opStr = '';
-    if (arStr.length < 5) {
+    if (arStr?.length < 5) {
       return { content: `${str?.slice(0, len)} `, isTrimed: str.length > len };
     }
     if (arStr) {

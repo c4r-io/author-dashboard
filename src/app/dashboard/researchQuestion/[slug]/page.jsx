@@ -16,6 +16,7 @@ const Page = ({ params }) => {
   const [question1, setQuestion1] = useState(null);
   const [description1, setDescription1] = useState(null);
   const [question2, setQuestion2] = useState(null);
+  const [question2Placeholder, setQuestion2Placeholder] = useState(null);
   const getResearchQuestion = async () => {
     dispatchUserData({ type: 'checkLogin' });
     const config = {
@@ -52,6 +53,7 @@ const Page = ({ params }) => {
     setQuestion1(researchQuestionResponse?.researchQuestions?.question1);
     setDescription1(researchQuestionResponse?.researchQuestions?.description1);
     setQuestion2(researchQuestionResponse?.researchQuestions?.question2);
+    setQuestion2Placeholder(researchQuestionResponse?.researchQuestions?.question2Placeholder);
   }, [researchQuestionResponse]);
   // update user data
   // content type form data
@@ -82,6 +84,12 @@ const Page = ({ params }) => {
       researchQuestionResponse?.researchQuestions?.question2 !== question2
     ) {
       data.question2 = question2;
+    }
+    if (
+      question2Placeholder &&
+      researchQuestionResponse?.researchQuestions?.question2Placeholder !== question2Placeholder
+    ) {
+      data.question2Placeholder = question2Placeholder;
     }
     if (Object.keys(data).length <= 0) {
       toast.error(
@@ -200,6 +208,25 @@ const Page = ({ params }) => {
               researchQuestionResponse?.researchQuestions?.question2
             }
             onInput={(e) => setQuestion2(e.target.value)}
+          />
+        </div>
+        <div className="mb-6">
+          <label
+            htmlFor="question2Placeholder"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            {' '}
+            Question2 Placeholder
+          </label>
+          <input
+            type="text"
+            id="question2Placeholder"
+            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
+            placeholder="question2Placeholder"
+            defaultValue={
+              researchQuestionResponse?.researchQuestions?.question2Placeholder
+            }
+            onInput={(e) => setQuestion2Placeholder(e.target.value)}
           />
         </div>
         <button

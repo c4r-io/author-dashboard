@@ -24,9 +24,9 @@ export async function GET(req, context) {
 // @route PUT api/studentSubmittedQuestions/:id
 // @acess Privet
 export async function PUT(req, context) {
-  if (!(await protect(req))) {
-    return Response.json({ mesg: 'Not authorized' });
-  }
+  // if (!(await protect(req))) {
+  //   return Response.json({ mesg: 'Not authorized' });
+  // }
   const { params } = context;
   connectMongoDB();
   const studentSubmittedQuestion = await StudentSubmittedQuestion.findById(

@@ -18,13 +18,14 @@ export async function GET(req, res) {
   const page = Number(req.nextUrl.searchParams.get('pageNumber')) || 1;
   const count = await ResearchQuestion.countDocuments({ ...keywords });
   const apiFunction = ResearchQuestion.find({ ...keywords })
-    .limit(pageSize)
-    .skip(pageSize * (page - 1))
-    .sort({ createdAt: -1 });
+  .limit(pageSize)
+  .skip(pageSize * (page - 1))
+  .sort({ createdAt: -1 });
   if (req.nextUrl.searchParams.get('select')) {
     apiFunction.select(req.nextUrl.searchParams.get('select'));
   }
   const researchQuestions = await apiFunction.exec();
+  console.log('page', researchQuestions);
   return Response.json({
     researchQuestions,
     page,
@@ -52,6 +53,9 @@ export async function POST(req, context) {
     }
     if (body.get('question2')) {
       researchQuestion['question2'] = body.get('question2');
+    }
+    if (body.get('question2Placeholder')) {
+      researchQuestion['question2Placeholder'] = body.get('question2Placeholder');
     }
     const createdResearchQuestion = await ResearchQuestion.create({
       ...researchQuestion,

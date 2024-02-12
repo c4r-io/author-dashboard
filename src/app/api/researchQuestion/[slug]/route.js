@@ -24,9 +24,9 @@ export async function GET(req, context) {
 // @route PUT api/researchQuestions/:id
 // @acess Privet
 export async function PUT(req, context) {
-  if (!(await protect(req))) {
-    return Response.json({ mesg: 'Not authorized' });
-  }
+  // if (!(await protect(req))) {
+  //   return Response.json({ mesg: 'Not authorized' });
+  // }
   const { params } = context;
   connectMongoDB();
   const researchQuestion = await ResearchQuestion.findById(params.slug);
@@ -45,6 +45,9 @@ export async function PUT(req, context) {
     }
     if (body.get('question2')) {
       researchQuestion.question2 = body.get('question2');
+    }
+    if (body.get('question2Placeholder')) {
+      researchQuestion.question2Placeholder = body.get('question2Placeholder');
     }
     const updatedResearchQuestion = await researchQuestion.save();
     return Response.json({ ...updatedResearchQuestion._doc });

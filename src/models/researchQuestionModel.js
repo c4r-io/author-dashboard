@@ -28,6 +28,9 @@ const researchQuestionSchema = mongoose.Schema(
     question2: {
       type: String,
     },
+    question2Placeholder: {
+      type: String,
+    },
     researchQuestionId: {
       type: String,
     },
