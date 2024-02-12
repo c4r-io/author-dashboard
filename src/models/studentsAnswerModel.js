@@ -17,7 +17,8 @@ async function getNextId(counterName) {
 const studentsAnswerSchema = mongoose.Schema(
   {
     researchQuestion: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'ResearchQuestion' 
     },
     question1Answer: {
       type: String,
