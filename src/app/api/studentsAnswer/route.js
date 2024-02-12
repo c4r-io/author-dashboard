@@ -24,6 +24,10 @@ export async function GET(req, res) {
   if (req.nextUrl.searchParams.get('select')) {
     apiFunction.select(req.nextUrl.searchParams.get('select'));
   }
+  
+  if (req.nextUrl.searchParams.get('populate')) {
+    apiFunction.populate(req.nextUrl.searchParams.get('populate'));
+  }
   const studentsAnswers = await apiFunction.exec();
   return Response.json({
     studentsAnswers,
