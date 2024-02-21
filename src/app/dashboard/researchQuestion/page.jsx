@@ -55,7 +55,7 @@ const Page = () => {
       },
       params: {
         pageNumber: page,
-        select: ' question1 description1 question2',
+        select: 'questionType question1 description1 question2',
       },
     };
     setListLoading(true);
@@ -197,6 +197,9 @@ const Page = () => {
             <thead className="text-xs text-gray-700 uppercase bg-gray-300 dark:bg-gray-900 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
+                  Question Type
+                </th>
+                <th scope="col" className="px-6 py-3">
                   Question1
                 </th>
                 <th scope="col" className="px-6 py-3">
@@ -217,6 +220,10 @@ const Page = () => {
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                     key={index}
                   >
+                    <td className="px-6 py-4">
+                      {getTrimedString(item.questionType)?.content}
+                      {getTrimedString(item.questionType)?.isTrimed && '...'}
+                    </td>
                     <td className="px-6 py-4">
                       {getTrimedString(item.question1)?.content}
                       {getTrimedString(item.question1)?.isTrimed && '...'}
