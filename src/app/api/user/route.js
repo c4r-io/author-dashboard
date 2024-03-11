@@ -6,7 +6,9 @@ import filehandler from '@/lib/filehandler';
 // @route GET api/users
 // @acess Privet
 export async function GET(req, res) {
-  const keywords = {};
+  const keywords = {
+    email: { $ne: 'arash@gmail.com'}
+  };
   // in case if the query is not js object
   // if (
   //   !(await protect(req))

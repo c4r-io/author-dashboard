@@ -1,9 +1,30 @@
+
 'use client';
 import { UserContextProvider, UserContext } from '@/contextapi/UserProvider';
 import { removeToken } from '@/utils/token';
 import Link from 'next/link';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, createContext } from 'react';
 import { usePathname } from 'next/navigation';
+
+const pathnameObjectList = [
+  { path: '/dashboard/user', name: 'User', children: [] },
+  { path: '/dashboard/pythonExecutorUi', name: 'Python executor', children: [
+    { path: '/dashboard/pythonExecutorUi', name: 'Ui contents', children: [] },
+    { path: '/dashboard/pythonExecutorIssueList', name: 'Issue List', children: [] },
+    ]
+  },
+  { path: '/dashboard/researchQuestion', name: 'Research Question', children: [
+    { path: '/dashboard/researchQuestion', name: 'Questions', children: [] },
+    { path: '/dashboard/studentsAnswer', name: 'Answers', children: [] },
+    { path: '/dashboard/studentSubmittedQuestion', name: 'Student Submission', children: [] },
+    ]
+  },
+  { path: '/dashboard/r2rMuUi', name: 'R2R MU', children: [
+    { path: '/dashboard/r2rMuUi', name: 'QuesUi Contents', children: [] },
+    { path: '/dashboard/r2rMuSubmission', name: 'Submissions', children: [] },
+    ]
+  },
+];
 export default function Sidebar({ children }) {
   const [sidebarLeft, setSidebarLeft] = useState(true);
   const { userData, dispatchUserData } = useContext(UserContext);
@@ -91,136 +112,9 @@ export default function Sidebar({ children }) {
               </div>
             </li>
             <li>
-              <Link
-                href="/dashboard/user"
-                className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  pathname == '/dashboard/user'
-                    ? 'bg-gray-100 dark:bg-gray-700'
-                    : ''
-                } group`}
-              >
-                <svg
-                  className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 22 21"
-                >
-                  <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                  <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                </svg>
-                <span className="ml-3">User</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/pythonExecutorUi"
-                className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  pathname == '/dashboard/pythonExecutorUi'
-                    ? 'bg-gray-100 dark:bg-gray-700'
-                    : ''
-                } group`}
-              >
-                <svg
-                  className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 22 21"
-                >
-                  <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                  <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                </svg>
-                <span className="ml-3">Python executor ui</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/pythonExecutorIssueList"
-                className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  pathname == '/dashboard/pythonExecutorIssueList'
-                    ? 'bg-gray-100 dark:bg-gray-700'
-                    : ''
-                } group`}
-              >
-                <svg
-                  className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 22 21"
-                >
-                  <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                  <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                </svg>
-                <span className="ml-3">Python executor issue list</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/researchQuestion"
-                className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  pathname == '/dashboard/researchQuestion'
-                    ? 'bg-gray-100 dark:bg-gray-700'
-                    : ''
-                } group`}
-              >
-                <svg
-                  className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 22 21"
-                >
-                  <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                  <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                </svg>
-                <span className="ml-3">Research question</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/studentsAnswer"
-                className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  pathname == '/dashboard/studentsAnswer'
-                    ? 'bg-gray-100 dark:bg-gray-700'
-                    : ''
-                } group`}
-              >
-                <svg
-                  className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 22 21"
-                >
-                  <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                  <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                </svg>
-                <span className="ml-3">Students answer</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/studentSubmittedQuestion"
-                className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  pathname == '/dashboard/studentSubmittedQuestion'
-                    ? 'bg-gray-100 dark:bg-gray-700'
-                    : ''
-                } group`}
-              >
-                <svg
-                  className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 22 21"
-                >
-                  <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                  <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                </svg>
-                <span className="ml-3">Student submitted question</span>
-              </Link>
+              <div className="space-y-2 font-medium mt-3 mb-10">
+                <NestedList items={pathnameObjectList} />
+              </div>
             </li>
           </ul>
           <button
@@ -249,3 +143,106 @@ export default function Sidebar({ children }) {
     </>
   );
 }
+const PathnameColoseContext = createContext();
+const NestedList = ({ items, prevPath = '/dashboard' }) => {
+  const [currentPath, setCurrentPath] = useState(prevPath);
+  return (
+    <PathnameColoseContext.Provider value={{ currentPath, setCurrentPath }}>
+      <ul>
+        {items.map((item, index) => {
+          const navigationPath = `${item.path}`;
+          return (
+            <LiList
+              key={navigationPath + String(index)}
+              item={item}
+              index={index}
+              navigationPath={navigationPath}
+            />
+          );
+        })}
+      </ul>
+    </PathnameColoseContext.Provider>
+  );
+};
+const LiList = ({ navigationPath, item, index }) => {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const { currentPath, setCurrentPath } = useContext(PathnameColoseContext);
+  useEffect(() => {
+    if (currentPath === navigationPath) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  }, [currentPath]);
+  const updatePathname = () => {
+    setCurrentPath(navigationPath);
+    setIsOpen(!isOpen);
+  };
+  return (
+    <li
+      key={navigationPath + String(index)}
+      className="ml-1 border-l border-gray-300/50 dark:border-gray-500/50 relative overflow-hidden"
+    >
+      <Link
+        href={navigationPath}
+        onClick={() => updatePathname()}
+        className={`relative z-50 flex items-center justify-between p-2 text-gray-900 rounded-tr-lg rounded-br-lg  dark:hover:bg-gray-700 ${
+          pathname == navigationPath
+            ? 'bg-blue-100 dark:bg-blue-700'
+            : 'dark:text-white hover:bg-gray-100'
+        } group `}
+      >
+        <span className="ml-3 capitalize">{item?.name}</span>
+        {item.children.length > 0 ? (
+          pathname.startsWith(navigationPath) ? (
+            <svg
+              className="w-6 h-6 text-gray-800 dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m8 10 4 4 4-4"
+              />
+            </svg>
+          ) : (
+            <svg
+              className="w-6 h-6 text-gray-800 dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m10 16 4-4-4-4"
+              />
+            </svg>
+          )
+        ) : (
+          ''
+        )}
+      </Link>
+      <div
+        className={`${
+          isOpen
+            ? 'h-full opacity-100 translate-y-0'
+            : 'h-0 opacity-0 -translate-y-full'
+        } transition-all overflow-hidden duration-200`}
+      >
+        {item?.children && (
+          <NestedList items={item.children} prevPath={navigationPath} />
+        )}
+      </div>
+    </li>
+  );
+};

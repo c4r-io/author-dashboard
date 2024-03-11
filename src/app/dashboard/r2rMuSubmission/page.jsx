@@ -1,193 +1,157 @@
-"use client";
-import { api } from "@/utils/apibase";
-import Pagination from "@/components/Pagination.jsx";
-import { getToken } from "@/utils/token";
-import { toast } from "react-toastify";
-import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { UserContext } from "@/contextapi/UserProvider";
+'use client';
+import { api } from '@/utils/apibase';
+import Pagination from '@/components/Pagination.jsx';
+import { getToken } from '@/utils/token';
+import { deleteFromList, getTrimedString } from '@/utils/helperFunctions';
+import { toast } from 'react-toastify';
+import Link from 'next/link';
+import { useContext, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { UserContext } from '@/contextapi/UserProvider';
 const Page = () => {
-  function getTrimedString(str, len = 50) {
-    const arStr = str?.split(" ");
-    let opStr = "";
-    if (arStr?.length < 5) {
-      return { content: `${str?.slice(0, len)} `, isTrimed: str.length > len };
-    }
-    if (arStr) {
-      for (const iterator of arStr) {
-        const testOpStr = opStr + " " + iterator;
-        if (testOpStr.length < len) {
-          opStr = testOpStr;
-        } else {
-          break;
-        }
-      }
-      return { content: `${opStr} `, isTrimed: str.length > len };
-    } else {
-      return { content: ` `, isTrimed: false };
-    }
-  }
   const { userData, dispatchUserData } = useContext(UserContext);
   const router = useRouter();
-  const [markedList, setMarkedList] = useState([]);
-  const mark = (id) => {
-    setMarkedList([...markedList, id]);
-  };
-  const unmark = (id) => {
-    setMarkedList(markedList.filter((item) => item != id));
-  };
-  const [researchQuestionList, setResearchQuestionList] = useState({
+  const [r2rMuSubmissionList, setR2rMuSubmissionList] = useState({
     page: 1,
     pages: 1,
-    researchQuestions: null,
+    r2rMuSubmissions: null,
   });
   const [page, setPage] = useState(1);
   const [deletePopup, setDeletePopup] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [createLoading, setCreateLoading] = useState(false);
   const [listLoading, setListLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
-  const pageNumber = searchParams.get("page");
+  const pageNumber = searchParams.get('page');
   if (pageNumber) {
     setPage(pageNumber);
   }
-  const getresearchQuestionsList = async (page) => {
-    dispatchUserData({ type: "checkLogin" });
+  const getr2rMuSubmissionsList = async (page) => {
+    dispatchUserData({ type: 'checkLogin' });
     const config = {
-      method: "GET",
-      url: "api/researchQuestion",
+      method: 'GET',
+      url: 'api/r2rMuSubmission',
       headers: {
-        Authorization: `Bearer ${getToken("token")}`,
+        Authorization: `Bearer ${getToken('token')}`,
       },
       params: {
         pageNumber: page,
-        select: "questionType question1 description1 question2",
+        select: ' labid',
       },
     };
     setListLoading(true);
+    setLoading(true);
     try {
       const response = await api.request(config);
-      setResearchQuestionList(response.data);
+      setR2rMuSubmissionList(response.data);
       console.log(response.data);
       setListLoading(false);
+      setLoading(false);
     } catch (error) {
       console.log(error);
       setListLoading(false);
+      setLoading(false);
       if (error?.response?.status == 401) {
-        toast.error(error.response.data.message + ", Login to try again.", {
-          position: "top-center",
+        toast.error(error.response.data.message + ', Login to try again.', {
+          position: 'top-center',
         });
-        router.push("/");
+        router.push('/');
       } else {
         toast.error(error.message, {
-          position: "top-center",
+          position: 'top-center',
         });
       }
     }
   };
-  const createSampleResearchQuestion = async () => {
-    dispatchUserData({ type: "checkLogin" });
+  useEffect(() => {
+    getr2rMuSubmissionsList(page);
+  }, [page]);
+  const createSampleR2rMuSubmission = async () => {
+    dispatchUserData({ type: 'checkLogin' });
     const config = {
-      method: "post",
-      url: "api/researchQuestion",
+      method: 'post',
+      url: 'api/r2rMuSubmission',
       headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${getToken("token")}`,
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${getToken('token')}`,
       },
       data: {
-        questionType: "Sample Question type",
-        question1: "Sample Question1",
-        description1: "Sample Description1",
-        question2: "Sample Question2",
-        question2Placeholder: "Sample Question2 Placeholder",
+        choosenUsers: JSON.stringify([{sample:'sample'}]),
+        labid: 'Sample Labid',
       },
     };
     setCreateLoading(true);
+    setLoading(true);
     try {
       const response = await api.request(config);
       console.log(response.data);
       setCreateLoading(false);
-      router.push("/dashboard/researchQuestion/" + response.data._id);
-      toast.success("Sample Research question Created Successfully!", {
-        position: "top-center",
+      setLoading(false);
+      router.push('/dashboard/r2rMuSubmission/' + response.data._id);
+      toast.success('Sample R2r mu submission Created Successfully!', {
+        position: 'top-center',
       });
     } catch (error) {
       if (error?.response?.status == 401) {
-        toast.error(error.response.data.message + ". Login to try again.", {
-          position: "top-center",
+        toast.error(error.response.data.message + '. Login to try again.', {
+          position: 'top-center',
         });
-        router.push("/");
+        router.push('/');
       } else {
         toast.error(error.message, {
-          position: "top-center",
+          position: 'top-center',
         });
       }
       console.error(error);
       setCreateLoading(false);
+      setLoading(false);
     }
   };
   const deleteConfirmDialog = (id) => {
     setDeleteId(id);
     setDeletePopup(true);
   };
-  const deleteResearchQuestion = async () => {
-    dispatchUserData({ type: "checkLogin" });
+  const deleteR2rMuSubmission = async () => {
+    dispatchUserData({ type: 'checkLogin' });
     const config = {
-      method: "delete",
-      url: "api/researchQuestion/" + deleteId,
+      method: 'delete',
+      url: 'api/r2rMuSubmission/' + deleteId,
       headers: {
-        Authorization: `Bearer ${getToken("token")}`,
+        Authorization: `Bearer ${getToken('token')}`,
       },
     };
+    setLoading(true);
     try {
       await api.request(config);
-      getresearchQuestionsList();
-      setDeletePopup(false);
-      toast.success("Deleted successfully!", {
-        position: "top-center",
-      });
-    } catch (error) {
-      setDeletePopup(false);
-      if (error?.response?.status == 401) {
-        toast.error(error.response.data.message + ". Login to try again.", {
-          position: "top-center",
-        });
-        router.push("/");
-      } else {
-        toast.error(error.message, {
-          position: "top-center",
-        });
+      deleteFromList(
+        r2rMuSubmissionList,
+        'r2rMuSubmissions',
+        deleteId,
+        setR2rMuSubmissionList,
+      );
+      if (
+        r2rMuSubmissionList.r2rMuSubmissions.length < 5 &&
+        r2rMuSubmissionList.pages !== 1
+      ) {
+        getr2rMuSubmissionsList();
       }
-      console.error(error);
-    }
-  };
-  const deleteMarkedResearchQuestion = async () => {
-    dispatchUserData({ type: "checkLogin" });
-    const config = {
-      method: "delete",
-      url: "api/researchQuestion/" + deleteId,
-      headers: {
-        Authorization: `Bearer ${getToken("token")}`,
-      },
-    };
-    try {
-      await api.request(config);
-      getresearchQuestionsList();
       setDeletePopup(false);
-      toast.success("Deleted successfully!", {
-        position: "top-center",
+      setLoading(false);
+      toast.success('Deleted successfully!', {
+        position: 'top-center',
       });
     } catch (error) {
       setDeletePopup(false);
+      setLoading(false);
       if (error?.response?.status == 401) {
-        toast.error(error.response.data.message + ". Login to try again.", {
-          position: "top-center",
+        toast.error(error.response.data.message + '. Login to try again.', {
+          position: 'top-center',
         });
-        router.push("/");
+        router.push('/');
       } else {
         toast.error(error.message, {
-          position: "top-center",
+          position: 'top-center',
         });
       }
       console.error(error);
@@ -197,65 +161,48 @@ const Page = () => {
     setPage(Number(e));
     // router.push({ query: { page: e } });
   };
-  useEffect(() => {
-    getresearchQuestionsList(page);
-  }, [page]);
   return (
-    <div className="container mx-auto py-4 px-4 md:px-0">
-      <div>
+    <div
+      className={`container mx-auto py-4 px-4 md:px-0 ${
+        loading ? '!cursor-wait' : ''
+      } `}
+    >
+      <div className={` ${loading ? '!pointer-events-none' : ''} `}>
         <div className="w-full flex justify-end pb-3">
-          <div>
-            {markedList.length > 0 && (
-              <button
-                type="button"
-                className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white  bg-gradient-to-r from-green-700 to-green-600 hover:bg-gradient-to-bl rounded-lg focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                onClick={() => deleteMarkedResearchQuestion()}
+          <button
+            type="button"
+            className={`px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white  bg-gradient-to-r from-green-700 to-green-600 hover:bg-gradient-to-bl rounded-lg focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800
+            ${loading ? '!cursor-wait ' : ''}
+            `}
+            onClick={() => createSampleR2rMuSubmission()}
+            disabled={createLoading}
+          >
+            {!createLoading && (
+              <svg
+                className="w-3 h-3 mr-1 text-white"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 20"
               >
-                Delete Marked
-              </button>
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              </svg>
             )}
-            <button
-              type="button"
-              className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white  bg-gradient-to-r from-green-700 to-green-600 hover:bg-gradient-to-bl rounded-lg focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-              onClick={() => createSampleResearchQuestion()}
-              disabled={createLoading}
-            >
-              {!createLoading && (
-                <svg
-                  className="w-3 h-3 mr-1 text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                </svg>
-              )}
-              {createLoading ? "Creating..." : "New Research question"}
-            </button>
-          </div>
+            {createLoading ? 'Creating...' : 'New R2r mu submission'}
+          </button>
         </div>
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-300 dark:bg-gray-900 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
-                  Question Type
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Question1
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Description1
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Question2
+                  Labid
                 </th>
                 <th scope="col" className="px-6 py-3 text-right">
                   Actions
@@ -264,34 +211,12 @@ const Page = () => {
             </thead>
             {!listLoading && (
               <tbody>
-                {researchQuestionList?.researchQuestions?.map((item, index) => (
+                {r2rMuSubmissionList?.r2rMuSubmissions?.map((item, index) => (
                   <tr
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                     key={index}
                   >
-                    <td className="px-6 py-4">
-                      {markedList.includes(item._id) ? (
-                        <button onClick={() => unmark(item._id)}>UnMark</button>
-                      ) : (
-                        <button onClick={() => mark(item._id)}>Mark</button>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      {getTrimedString(item.questionType)?.content}
-                      {getTrimedString(item.questionType)?.isTrimed && "..."}
-                    </td>
-                    <td className="px-6 py-4">
-                      {getTrimedString(item.question1)?.content}
-                      {getTrimedString(item.question1)?.isTrimed && "..."}
-                    </td>
-                    <td className="px-6 py-4">
-                      {getTrimedString(item.description1)?.content}
-                      {getTrimedString(item.description1)?.isTrimed && "..."}
-                    </td>
-                    <td className="px-6 py-4">
-                      {getTrimedString(item.question2)?.content}
-                      {getTrimedString(item.question2)?.isTrimed && "..."}
-                    </td>
+                    <td className="px-6 py-4">{item.labid}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex space-x-1 items-center text-base font-semibold text-gray-900 dark:text-white">
                         <button
@@ -299,7 +224,7 @@ const Page = () => {
                           className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-yellow-700 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800"
                           onClick={() =>
                             router.push(
-                              "/dashboard/researchQuestion/" + item._id
+                              '/dashboard/r2rMuSubmission/' + item._id,
                             )
                           }
                         >
@@ -349,12 +274,12 @@ const Page = () => {
               </tbody>
             )}
           </table>
-          {researchQuestionList?.researchQuestions?.length == 0 ? (
+          {r2rMuSubmissionList?.r2rMuSubmissions?.length == 0 ? (
             <div className="text-black dark:text-white text-center">
               No data to show
             </div>
           ) : (
-            ""
+            ''
           )}
           {listLoading && (
             <div
@@ -385,10 +310,10 @@ const Page = () => {
             </div>
           )}
         </div>
-        {researchQuestionList.pages > 0 && (
+        {r2rMuSubmissionList.pages > 0 && (
           <Pagination
             activePage={page}
-            pageLength={researchQuestionList?.pages}
+            pageLength={r2rMuSubmissionList?.pages}
             onpageChange={onpageChange}
           />
         )}
@@ -437,13 +362,13 @@ const Page = () => {
                   />
                 </svg>
                 <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                  Are you sure you want to delete this researchQuestion?
+                  Are you sure you want to delete this r2rMuSubmission?
                 </h3>
                 <button
                   data-modal-hide="popup-modal"
                   type="button"
                   className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-                  onClick={() => deleteResearchQuestion()}
+                  onClick={() => deleteR2rMuSubmission()}
                 >
                   Yes, I&apos;m sure
                 </button>
