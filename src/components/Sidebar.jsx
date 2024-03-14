@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 
 const pathnameObjectList = [
   { path: '/dashboard/user', name: 'User', children: [] },
+  { path: '/dashboard/videoClipList', name: 'Clip Repo', children: [] },
   { path: '/dashboard/pythonExecutorUi', name: 'Python executor', children: [
     { path: '/dashboard/pythonExecutorUi', name: 'Ui contents', children: [] },
     { path: '/dashboard/pythonExecutorIssueList', name: 'Issue List', children: [] },
