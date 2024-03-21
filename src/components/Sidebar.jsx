@@ -18,6 +18,7 @@ const pathnameObjectList = [
     { path: '/dashboard/researchQuestion', name: 'Questions', children: [] },
     { path: '/dashboard/studentsAnswer', name: 'Answers', children: [] },
     { path: '/dashboard/studentSubmittedQuestion', name: 'Student Submission', children: [] },
+    { path: '/dashboard/resurch_question_status_selector', name: 'Resurch question status selector', children: [] },
     ]
   },
   { path: '/dashboard/r2rMuUi', name: 'R2R MU', children: [
