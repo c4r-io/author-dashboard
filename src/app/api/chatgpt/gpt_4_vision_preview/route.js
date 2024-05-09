@@ -11,7 +11,7 @@ export async function POST(req, context) {
             apiKey,
         });
         const openAi = await openai.chat.completions.create({
-            model: "gpt-4-vision-preview",
+            model: "gpt-4-turbo-2024-04-09",
             messages,
         });
         const message = openAi.choices[0];
