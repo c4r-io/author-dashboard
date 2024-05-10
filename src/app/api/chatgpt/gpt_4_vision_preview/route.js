@@ -6,12 +6,13 @@ export async function POST(req, context) {
     // console.log(req)
     // start if
     const messages = body['messages']
+    const model = body['model'] || "gpt-4-turbo-2024-04-09"
     if (messages) {
         const openai = new OpenAI({
             apiKey,
         });
         const openAi = await openai.chat.completions.create({
-            model: "gpt-4-turbo-2024-04-09",
+            model:model,
             messages,
         });
         const message = openAi.choices[0];
