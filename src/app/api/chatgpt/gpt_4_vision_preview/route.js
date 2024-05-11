@@ -1,6 +1,28 @@
 import OpenAI from "openai";
 const apiKey = process.env.OPENAI_API_KEY;
 // Pass the API key when creating the OpenAI object
+export async function GET(req, context) {
+    const openai = new OpenAI({
+        apiKey,
+    });
+    const models = await openai.models.list();
+    // start if
+    if(models){
+        return Response.json(models, {
+            status: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            },
+        }
+        );
+    }
+    return Response.json(
+        { models: [], message: 'No models found'},
+        { status: 400 },
+    );
+}
 export async function POST(req, context) {
     const body = await req.json();
     // console.log(req)
@@ -12,7 +34,7 @@ export async function POST(req, context) {
             apiKey,
         });
         const openAi = await openai.chat.completions.create({
-            model:model,
+            model: model,
             messages,
         });
         const message = openAi.choices[0];
